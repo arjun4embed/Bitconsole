@@ -17,11 +17,42 @@
 #include "stm32f4xx_ll_spi.h"
 #include "stm32f4xx_ll_dma.h"
 #include "stm32f4xx_ll_dma2d.h"
+#include "semphr.h"
 
 
 
 #define LOG(str)   USART2_SendString_IT(str)
 #define TX_BUF_SIZE 128
+
+
+enum button_state
+{
+   BUTTON_IDLE          =0,
+   BUTTON_PRESSED       =1,
+   BUTTON_HELD          =2,
+   BUTTON_RELEASED      =3,
+   BUTTON_PRESSED_10MS =4,
+   BUTTON_PRESSED_50MS  =5,
+   BUTTON_PRESSED_100MS  =6
+};
+
+enum button_direction
+{
+   BUTTON_DOWN       =0,
+   BUTTON_UP         =3,
+   BUTTON_LEFT       =2,
+   BUTTON_RIGHT      =1,
+   BUTTON_SELECT     =5,
+   BUTTON_SELECT2    =4
+};
+typedef struct
+{
+    uint8_t button;
+    uint8_t state;
+} ButtonEvent;
+
+
+
 
 void  USART2_Init();
 void USART2_SendString_IT(const char *str);
@@ -41,7 +72,13 @@ void DMA1_I2C1_TX_Init();
 void DMA1_I2C1_TX_Start(uint8_t page);
 
 
-void gfx_loading_bar(uint8_t x, uint8_t y, uint8_t width, uint8_t height,uint8_t percent);
+void int_to_string(int num, char *str);
+void log_uint(size_t val);
 
 
+void gfx_update_safe();
+
+void tim2_init();
+void buzzer_stop();
+void buzzer_play(uint16_t freq);
 #endif 

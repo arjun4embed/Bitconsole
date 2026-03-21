@@ -7,7 +7,6 @@
 #define INCLUDE_vTaskSuspend 1
 #define configSUPPORT_DYNAMIC_ALLOCATION 1
 
-#define configUSE_IDLE_HOOK     0
 #define configUSE_TICK_HOOK     0
 
 #define configCPU_CLOCK_HZ      ( 16000000UL )
@@ -20,6 +19,8 @@
 
 #define configUSE_MUTEXES               1
 #define configUSE_COUNTING_SEMAPHORES   1
+
+#define configUSE_IDLE_HOOK 1
 
 #define configTICK_TYPE_WIDTH_IN_BITS   TICK_TYPE_WIDTH_32_BITS
 

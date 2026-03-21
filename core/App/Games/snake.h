@@ -20,7 +20,11 @@
 #define MAX_SNAKE_LENGTH 50
 #define SNAKE_SPAWN_LENGTH 5
 
+#define MIN_ROW 1
+#define MAX_ROW (GRID_ROWS - 2)
 
+#define MIN_COL 1
+#define MAX_COL (GRID_COLS - 2)
 
 struct snake
 {
@@ -54,9 +58,26 @@ struct obstacle_coordinate
    uint8_t row;
    uint8_t col;
 };
+struct obstacle_line
+{
+    uint8_t row;
+    uint8_t col;
+    uint8_t length;
+};
+struct game_stat
+{
+   uint32_t high_score;
+   uint8_t current_score;
+   uint8_t game_level;
+};
 
+enum game_status
+{
+   game_over =0,
+   game_running =1
+};
 
-
+extern uint32_t score;
 void spawn_snake(struct snake *s1);
 void update_snake(struct snake *s1);
 void spawn_food(struct food_coordinate *food, struct snake *s1);
@@ -64,6 +85,10 @@ void check_food_eaten(struct food_coordinate *food, struct snake *s1);
 void erase_snake(struct snake *s1);
 void draw_snake(struct snake *s1);
 void draw_food( struct food_coordinate *f1);
+uint8_t check_crash(struct snake *s1);
+void update_current_score();
+void draw_obstacle(void);
+uint8_t  draw_game_status();
 
 
 #endif

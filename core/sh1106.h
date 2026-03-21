@@ -40,5 +40,8 @@ void gfx_draw_bitconsole_logo();
 void gfx_draw_icon16(uint8_t x, uint8_t y, const uint8_t *icon);
 void gfx_draw_icon30x24(uint8_t y, uint8_t x, const uint8_t *icon);
 void gfx_erase_area(uint8_t x_point, uint8_t y_point, uint8_t width, uint8_t height);
+void gfx_draw_snake_gif();
+void gfx_draw_dot_line(uint8_t x1_point,uint8_t y1_point,uint8_t x2_point,uint8_t y2_point);
+void gfx_loading_bar(uint8_t x, uint8_t y, uint8_t width, uint8_t height,uint8_t percent);
 
 #endif

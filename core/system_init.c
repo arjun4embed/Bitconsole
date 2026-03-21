@@ -7,6 +7,7 @@
 #include "stm32f4xx_ll_usart.h"
 #include "stm32f4xx_ll_spi.h"
 #include "stm32f4xx_ll_i2c.h"
+#include "stm32f4xx_ll_tim.h"
 #include "system_init.h"
 
 
@@ -15,6 +16,7 @@ volatile uint16_t tx_head = 0;
 volatile uint16_t tx_tail = 0;
 
 extern uint8_t frame_buffer[8][128];
+extern TaskHandle_t i2cOwnerTask;
 
 
 void  USART2_Init();
@@ -264,12 +266,60 @@ void DMA1_I2C1_TX_Start(uint8_t page)
 }
 void DMA1_Stream6_IRQHandler(void)
 {
+      
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     if (LL_DMA_IsActiveFlag_TC6(DMA1))
     {
         LL_DMA_ClearFlag_TC6(DMA1);
         LL_I2C_DisableDMAReq_TX(I2C1);
         i2c1_stop();
+     if(i2cOwnerTask != NULL)
+        {
+            vTaskNotifyGiveFromISR(i2cOwnerTask, &xHigherPriorityTaskWoken);
+        }
     }
+
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+
+}
+void tim2_init()
+{
+    LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM2);
+    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);
+
+   
+    LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_0, LL_GPIO_MODE_ALTERNATE);
+    LL_GPIO_SetPinSpeed(GPIOA, LL_GPIO_PIN_0, LL_GPIO_SPEED_FREQ_HIGH);
+    LL_GPIO_SetPinOutputType(GPIOA, LL_GPIO_PIN_0, LL_GPIO_OUTPUT_PUSHPULL);
+    LL_GPIO_SetPinPull(GPIOA, LL_GPIO_PIN_0, LL_GPIO_PULL_NO);
+    LL_GPIO_SetAFPin_0_7(GPIOA, LL_GPIO_PIN_0, LL_GPIO_AF_1);
+
+    LL_TIM_SetPrescaler(TIM2, 15);      
+    LL_TIM_SetAutoReload(TIM2, 1000);   
+    LL_TIM_SetCounterMode(TIM2, LL_TIM_COUNTERMODE_UP);
+
+  
+    LL_TIM_OC_SetMode(TIM2, LL_TIM_CHANNEL_CH1, LL_TIM_OCMODE_PWM1);
+    LL_TIM_OC_EnablePreload(TIM2, LL_TIM_CHANNEL_CH1);
+
+    LL_TIM_OC_SetCompareCH1(TIM2, 500);
+    LL_TIM_CC_EnableChannel(TIM2, LL_TIM_CHANNEL_CH1);
+    LL_TIM_EnableARRPreload(TIM2);
+    LL_TIM_EnableCounter(TIM2);
+    LL_TIM_GenerateEvent_UPDATE(TIM2);
+}
+void buzzer_play(uint16_t freq)
+{
+    uint32_t arr = 1000000 / freq;
+
+    LL_TIM_SetAutoReload(TIM2, arr);
+    LL_TIM_OC_SetCompareCH1(TIM2, arr / 2);
+
+    LL_TIM_EnableCounter(TIM2);
+}
+void buzzer_stop()
+{
+    LL_TIM_DisableCounter(TIM2);
 }
 void gfx_loading_bar(uint8_t x, uint8_t y, uint8_t width, uint8_t height,uint8_t percent)
 {
@@ -282,11 +332,65 @@ void gfx_loading_bar(uint8_t x, uint8_t y, uint8_t width, uint8_t height,uint8_t
 {
     LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOC);
 
-    uint32_t pins[] = {LL_GPIO_PIN_0,LL_GPIO_PIN_1,LL_GPIO_PIN_2,LL_GPIO_PIN_3,LL_GPIO_PIN_4,LL_GPIO_PIN_5};
+    uint32_t pins[] = {LL_GPIO_PIN_6,LL_GPIO_PIN_1,LL_GPIO_PIN_2,LL_GPIO_PIN_3,LL_GPIO_PIN_4,LL_GPIO_PIN_5};
 
     for(int i = 0; i < 6; i++)
     {
         LL_GPIO_SetPinMode(GPIOC, pins[i], LL_GPIO_MODE_INPUT);
         LL_GPIO_SetPinPull(GPIOC, pins[i], LL_GPIO_PULL_UP);
+    }
+  
+}
+void log_uint(size_t val)
+{
+    char buf[12];
+    int i = 0;
+    char tmp[12];
+    int j = 0;
+
+    if(val == 0)
+    {
+        buf[i++] = '0';
+    }
+    else
+    {
+        while(val)
+        {
+            tmp[j++] = '0' + (val % 10);
+            val /= 10;
+        }
+
+        while(j)
+        {
+            buf[i++] = tmp[--j];
+        }
+    }
+
+    buf[i] = '\0';
+
+    LOG(buf);
+}
+void int_to_string(int num, char *str)
+{
+    int i = 0;
+
+    if(num == 0)
+    {
+        str[i++] = '0';
+    }
+
+    while(num > 0)
+    {
+        str[i++] = (num % 10) + '0';
+        num /= 10;
+    }
+
+    str[i] = '\0';
+
+    for(int j = 0; j < i/2; j++)
+    {
+        char temp = str[j];
+        str[j] = str[i-j-1];
+        str[i-j-1] = temp;
     }
 }
