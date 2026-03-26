@@ -65,7 +65,23 @@ This project focuses on firmware architecture, concurrency, and low-level driver
 - `gfx_update()`
 
 ---
+## System Monitoring
 
+The system includes a basic CPU usage monitoring mechanism using the FreeRTOS idle task.
+
+- CPU usage is calculated based on idle task execution count
+- Uses calibrated `MAX_IDLE_COUNT` for 100% idle reference
+- Helps visualize system load during runtime
+
+### Concept
+
+CPU Usage ≈  
+`(1 - (idleCounter / MAX_IDLE_COUNT)) * 100`
+
+- `idleCounter` increments inside idle task
+- Lower idle time → higher CPU usage
+
+This demonstrates real-time system performance monitoring in an RTOS environment.
 ## Peripheral Drivers
 
 ### USART (Interrupt Driven)
