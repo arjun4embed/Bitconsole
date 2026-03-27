@@ -2,6 +2,9 @@
 
 A bare-metal + FreeRTOS based embedded graphics console built on STM32, featuring a custom graphics stack, task-based architecture, and interactive applications like Snake.
 
+
+
+![BITCONSOLE Demo](https://github.com/arjun4embed/Bitconsole/blob/master/Media/gif2.gif)
 ---
 
 ## Overview
