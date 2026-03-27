@@ -1,6 +1,6 @@
 # BITCONSOLE – Embedded Graphics Console (STM32 + FreeRTOS)
 
-A bare-metal + FreeRTOS based embedded graphics console built on STM32, featuring a custom graphics stack, task-based architecture, and interactive applications like Snake.
+A FreeRTOS based embedded graphics console built on STM32, featuring a custom graphics stack, task-based architecture, and interactive applications like Snake.
 
 
 
