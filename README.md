@@ -17,7 +17,7 @@ BITCONSOLE is a small embedded system that simulates a handheld console environm
 - Game support (Snake implemented)  
 - Low-level peripheral control using STM32 LL drivers  
 
-This project focuses on firmware architecture, concurrency, and low-level driver design rather than using HAL or auto-generated code.
+
 
 ---
 
@@ -42,6 +42,7 @@ This project focuses on firmware architecture, concurrency, and low-level driver
 - Menu Task – Displays UI and launches apps
 - Button Task – Handles input and debouncing
 - Snake Task – Game loop and rendering
+- System Task - Gives CPU usage
 
 ---
 
