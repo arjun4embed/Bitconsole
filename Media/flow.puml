@@ -1,0 +1,25 @@
+
+
+@startuml
+left to right direction
+title BITCONSOLE - Core Flow (with CPU Monitor)
+
+actor User
+
+User --> [ButtonTask]
+
+[ButtonTask] --> [Queue] : send event
+[Menu/Snake Task] --> [Queue] : receive event
+
+' ==== Display Flow (Apps) ====
+[Menu/Snake Task] --> [I2C Mutex] : take
+[Menu/Snake Task] --> [Display] : update screen
+[Display] --> [Menu/Snake Task] : notify done
+[Menu/Snake Task] --> [I2C Mutex] : give
+
+' ==== CPU Monitor ====
+[CPU Monitor Task] --> [I2C Mutex] : take
+[CPU Monitor Task] --> [Display] : update CPU usage
+[Display] --> [CPU Monitor Task] : notify done
+[CPU Monitor Task] --> [I2C Mutex] : give
+@enduml
