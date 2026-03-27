@@ -136,34 +136,16 @@ void gfx_update_safe()
 }
 ```
 
----
-
 ## Hardware
 
-- STM32 (F4 series recommended)
+- STM32 F446RE    
 - SH1106 OLED (128x64)
 - GPIO Buttons
 - UART for debugging
 
 ---
 
-## How to Run
 
-1. Open in STM32CubeIDE (build only)
-2. Flash to STM32 board
-3. Connect OLED via I2C
-4. Use buttons to navigate and play
-
----
-
-## Design Philosophy
-
-- No HAL (LL + register-level)
-- Clean modular design
-- Practical RTOS usage
-- Focus on real firmware patterns
-
----
 
 ## Future Improvements
 
