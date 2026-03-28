@@ -786,7 +786,7 @@ void gfx_draw_snake_gif()
     vTaskDelay(pdMS_TO_TICKS(100));
     gfx_clear();
     gfx_draw_bitmap(0,0,snake_frame_2,128,64);
-       gfx_drawText(10,60,FONT1,"Press start");
+    gfx_drawText(10,60,FONT1,"Press start");
     gfx_update();
     vTaskDelay(pdMS_TO_TICKS(100));
 
